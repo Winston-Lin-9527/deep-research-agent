@@ -1,0 +1,8 @@
+{
+    "dependencies": ["."],
+    "graphs": {
+      "scope_research_agent": "./src/scoping_agent.py:scope_research"
+    },
+    "python_version": "3.11",
+    "env": ".env"
+  }
