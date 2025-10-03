@@ -20,13 +20,7 @@ from langgraph.graph import StateGraph, START, END
 from langgraph.types import Command
 
 from src.prompts import clarify_with_user_instructions, transform_messages_into_research_topic_prompt
-from src.states_scoping import AgentState, ClarifyWithUserSchema, ResearchQuestionSchema, AgentInputSchema
-
-# ===== UTILITY FUNCTIONS =====
-
-def get_today_str() -> str:
-    """Get current date in a human-readable format."""
-    return datetime.now().strftime("%a %b %-d, %Y")
+from src.scoping_states import AgentState, ClarifyWithUserSchema, ResearchQuestionSchema, AgentInputSchema
 
 # ===== CONFIGURATION =====
 

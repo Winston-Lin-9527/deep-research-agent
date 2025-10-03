@@ -18,7 +18,7 @@ class AgentState(MessagesState):
 
 # schemas
 class AgentInputSchema(MessagesState):
-    """ input schema for the first invoke """
+    """ input schema for the first invoke, contains only the messages from user input """
     pass
 
 class ClarifyWithUserSchema(BaseModel):
