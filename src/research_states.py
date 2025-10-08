@@ -4,7 +4,7 @@ State definitions and structured schemas for the researcher agent workflow.
 """
 
 import operator
-from typing import Annotated, Sequence, TypedDict, List
+from typing_extensions import TypedDict, List, Sequence, Annotated
 from pydantic import BaseModel, Field
 
 from langchain_core.messages import BaseMessage

@@ -12,11 +12,12 @@ from langgraph.checkpoint.memory import MemorySaver
 
 from src.prompts import research_agent_prompt, compress_research_system_prompt, compress_research_human_message
 from src.research_states import ResearcherAgentState
-from src.utils import tavily_search_tool, thinking_tool, get_today_str
+from src.utils import tavily_search_tool, think_tool, get_today_str
+
 
 
 # ===== CONFIGURATION =====
-tools = [tavily_search_tool, thinking_tool]
+tools = [tavily_search_tool, think_tool]
 tools_by_name = {tool.name: tool for tool in tools}
 
 # Initialize model
@@ -110,23 +111,23 @@ agent_builder.add_conditional_edges(
 )
 agent_builder.add_edge("tool_node", "llm_call") # loop back to LLM after tool use
 agent_builder.add_edge("compress_research", END)
-researcher_agent = agent_builder.compile()
+research_agent = agent_builder.compile()
 
 
 
-from langchain_core.messages import HumanMessage
+# from langchain_core.messages import HumanMessage
 
-# Example brief
-research_brief = """I want to identify and evaluate the coffee shops in San Francisco that are considered the best based specifically  
-on coffee quality. My research should focus on analyzing and comparing coffee shops within the San Francisco area, 
-using coffee quality as the primary criterion. I am open regarding methods of assessing coffee quality (e.g.,      
-expert reviews, customer ratings, specialty coffee certifications), and there are no constraints on ambiance,      
-location, wifi, or food options unless they directly impact perceived coffee quality. Please prioritize primary    
-sources such as the official websites of coffee shops, reputable third-party coffee review organizations (like     
-Coffee Review or Specialty Coffee Association), and prominent review aggregators like Google or Yelp where direct  
-customer feedback about coffee quality can be found. The study should result in a well-supported list or ranking of
-the top coffee shops in San Francisco, emphasizing their coffee quality according to the latest available data as  
-of July 2025."""
+# # Example brief
+# research_brief = """I want to identify and evaluate the coffee shops in San Francisco that are considered the best based specifically  
+# on coffee quality. My research should focus on analyzing and comparing coffee shops within the San Francisco area, 
+# using coffee quality as the primary criterion. I am open regarding methods of assessing coffee quality (e.g.,      
+# expert reviews, customer ratings, specialty coffee certifications), and there are no constraints on ambiance,      
+# location, wifi, or food options unless they directly impact perceived coffee quality. Please prioritize primary    
+# sources such as the official websites of coffee shops, reputable third-party coffee review organizations (like     
+# Coffee Review or Specialty Coffee Association), and prominent review aggregators like Google or Yelp where direct  
+# customer feedback about coffee quality can be found. The study should result in a well-supported list or ranking of
+# the top coffee shops in San Francisco, emphasizing their coffee quality according to the latest available data as  
+# of July 2025."""
 
-result = researcher_agent.invoke({"researcher_messages": [HumanMessage(content=f"{research_brief}.")]})
-print(result['researcher_messages'])
+# result = researcher_agent.invoke({"researcher_messages": [HumanMessage(content=f"{research_brief}.")]})
+# print(result['researcher_messages'])
