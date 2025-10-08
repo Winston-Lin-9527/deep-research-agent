@@ -59,9 +59,18 @@ def summarize_webpage_content(webpage_content: str) -> str:
         )
     )
     response = structured_output_model.invoke([prompt])
+    
+    # Handle case where response is None or doesn't have expected attributes
+    if response is None:
+        return f"<summary>\nError: Could not generate summary\n</summary>\n<key_excerpts>\nError: Could not extract excerpts\n</key_excerpts>"
+    
+    # Safely access attributes with fallbacks
+    summary = getattr(response, 'summary', 'Error: Could not generate summary')
+    key_excerpts = getattr(response, 'key_excerpts', 'Error: Could not extract excerpts')
+    
     formatted_summary = (
-        f"<summary>\n{response.summary}\n</summary>\n"
-        f"<key_excerpts>\n{response.key_excerpts}\n</key_excerpts>"
+        f"<summary>\n{summary}\n</summary>\n"
+        f"<key_excerpts>\n{key_excerpts}\n</key_excerpts>"
     )
     
     return formatted_summary

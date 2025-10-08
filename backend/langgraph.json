@@ -3,7 +3,8 @@
     "graphs": {
       "scope_research_agent": "./src/scoping_agent.py:scope_research",
       "researcher_agent": "./src/research_agent.py:research_agent",
-      "supervisor_agent": "./src/multi_agent_supervisor.py:supervisor_agent"
+      "supervisor_agent": "./src/multi_agent_supervisor.py:supervisor_agent",
+      "deep_research_agent": "./src/full_agent.py:deep_research_agent"
     },
     "python_version": "3.11",
     "env": ".env"

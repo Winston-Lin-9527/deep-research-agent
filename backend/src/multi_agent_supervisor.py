@@ -169,9 +169,11 @@ async def supervisor_tools(state: SupervisorState) -> Command[Literal["llm_call"
    # ======= graph construction =======
    
 supervisor_builder = StateGraph(SupervisorState)
-supervisor_builder.add_node(llm_call, "llm_call")    
-supervisor_builder.add_node(supervisor_tools, "supervisor_tools") 
-supervisor_builder.add_edge(START, llm_call)
+supervisor_builder.add_node("llm_call", llm_call)    
+supervisor_builder.add_node("supervisor_tools", supervisor_tools) 
+supervisor_builder.add_edge(START, "llm_call")
+
+# supervisor agent
 supervisor_agent = supervisor_builder.compile()
 
     

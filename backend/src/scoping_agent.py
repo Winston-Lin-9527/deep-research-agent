@@ -21,6 +21,7 @@ from langgraph.types import Command
 
 from src.prompts import clarify_with_user_instructions, transform_messages_into_research_topic_prompt
 from src.scoping_states import AgentState, ClarifyWithUserSchema, ResearchQuestionSchema, AgentInputSchema
+from utils import get_today_str
 
 # ===== CONFIGURATION =====
 
@@ -89,15 +90,15 @@ def write_research_brief(state: AgentState):
 # ===== GRAPH CONSTRUCTION =====
 
 # Build the scoping workflow
-deep_researcher_builder = StateGraph(AgentState, input_schema=AgentInputSchema)
+scope_research_builder = StateGraph(AgentState, input_schema=AgentInputSchema)
 
 # Add workflow nodes
-deep_researcher_builder.add_node("clarify_with_user", clarify_with_user)
-deep_researcher_builder.add_node("write_research_brief", write_research_brief)
+scope_research_builder.add_node("clarify_with_user", clarify_with_user)
+scope_research_builder.add_node("write_research_brief", write_research_brief)
 
 # Add workflow edges
-deep_researcher_builder.add_edge(START, "clarify_with_user")
-deep_researcher_builder.add_edge("write_research_brief", END)
+scope_research_builder.add_edge(START, "clarify_with_user")
+scope_research_builder.add_edge("write_research_brief", END)
 
 # Compile the workflow - this get imported from langgraph.json to expose to api..
-scope_research = deep_researcher_builder.compile()
+scope_research = scope_research_builder.compile()
