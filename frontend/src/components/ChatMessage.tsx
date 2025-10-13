@@ -29,19 +29,21 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
         mb: 2,
         px: 2,
         gap: 1,
+        justifyContent: isUser ? 'flex-end' : 'flex-start',
       }}
     >
-      <Avatar
-        sx={{
-          bgcolor: isUser ? theme.palette.primary.main : theme.palette.secondary.main,
-          width: 32,
-          height: 32,
-          mt: 0.5,
-        }}
-      >
-        {isUser ? <PersonIcon /> : <BotIcon />}
-      </Avatar>
-      
+      {!isUser && (
+        <Avatar
+          sx={{
+            bgcolor: theme.palette.secondary.main,
+            width: 32,
+            height: 32,
+            mt: 0.5,
+          }}
+        >
+          <BotIcon />
+        </Avatar>
+      )}
       <Paper
         elevation={1}
         sx={{
@@ -54,7 +56,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
             ? theme.palette.primary.contrastText 
             : theme.palette.text.primary,
           borderRadius: 2,
-          flexGrow: 1,
+          flexGrow: isUser ? 0 : 1,
         }}
       >
         <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
@@ -70,12 +72,24 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
             fontSize: '0.75rem',
           }}
         >
-          {message.timestamp.toLocaleTimeString([], {
+          {/* {message.timestamp.toLocaleTimeString([], {
             hour: '2-digit',
             minute: '2-digit'
-          })}
+          })} */}
         </Typography>
       </Paper>
+      {isUser && (
+        <Avatar
+          sx={{
+            bgcolor: theme.palette.primary.main,
+            width: 32,
+            height: 32,
+            mt: 0.5,
+          }}
+        >
+          <PersonIcon />
+        </Avatar>
+      )}
     </Box>
   );
 };

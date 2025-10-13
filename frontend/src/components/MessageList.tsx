@@ -4,8 +4,13 @@ import { ChatMessage } from './ChatMessage';
 import type { Message } from '../types/chat';
 
 interface MessageListProps {
-  messages: Message[];
+  messages: any[];
   isLoading: boolean;
+}
+
+export interface ProcessedMessage {
+  title: string;
+  data: any
 }
 
 export const MessageList: React.FC<MessageListProps> = ({ messages, isLoading }) => {
@@ -50,9 +55,15 @@ export const MessageList: React.FC<MessageListProps> = ({ messages, isLoading })
         </Box>
       )}
       
-      {messages.map((message) => (
-        <ChatMessage key={message.id} message={message} />
-      ))}
+      {messages.map((message, index) => {
+        const constructedMessage: Message = {
+          id: message.id || `msg_${index}`,
+          content: message.content as string,
+          role: message.type === 'human' ? 'user' : 'assistant',
+          timestamp: new Date(1900, 1, 1),
+        };
+        return <ChatMessage key={constructedMessage.id} message={constructedMessage} />;
+      })}
       
       {isLoading && (
         <Box

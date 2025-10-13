@@ -1,4 +1,6 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { useStream } from "@langchain/langgraph-sdk/react";
+import type { Message } from "@langchain/langgraph-sdk";
 import {
   Box,
   ThemeProvider,
@@ -9,7 +11,7 @@ import { ChatHeader } from './ChatHeader';
 import { ChatSidebar } from './ChatSidebar';
 import { MessageList } from './MessageList';
 import { ChatInput } from './ChatInput';
-import type { Conversation, Message, ChatState } from '../types/chat';
+import type { Conversation, ChatState } from '../types/chat';
 
 const theme = createTheme({
   palette: {
@@ -32,9 +34,55 @@ export const ChatApp: React.FC = () => {
   });
 
   const generateId = () => Math.random().toString(36).substr(2, 9);
+  const thread = useStream<{
+    messages: Message[];
+  }>({
+    apiUrl: "http://localhost:2024",
+    assistantId: "simple_chat",
+    messagesKey: "messages",
+  });
+
+  // // Append only the latest AI message from the stream into the active conversation
+  // useEffect(() => {
+  //   if (!chatState.currentConversationId) return;
+  //   const count = thread.messages.length;
+  //   if (count === 0) return;
+
+  //   const message = thread.messages[count - 1];
+  //   const messageId = `${message.type}_${count - 1}_${message.content}`;
+  //   if (message.type !== 'ai' || !message.content) return;
+  //   if (processedAiIdsRef.current.has(messageId)) return;
+
+  //   const aiMessage: MessageUI = {
+  //     id: generateId(),
+  //     content: message.content as string,
+  //     role: 'assistant',
+  //     timestamp: new Date(),
+  //   };
+  //   // console.log(aiMessage);
+
+  //   setChatState(prev => ({
+  //     ...prev,
+  //     conversations: prev.conversations.map(conv =>
+  //       conv.id === chatState.currentConversationId
+  //         ? {
+  //             ...conv,
+  //             messages: [...conv.messages, aiMessage],
+  //             updatedAt: new Date(),
+  //           }
+  //         : conv
+  //     ),
+  //     isLoading: false,
+  //   }));
+
+  //   processedAiIdsRef.current.add(messageId);
+  // }, [thread.messages, chatState.currentConversationId]);
+  
+
 
   const handleMenuClick = useCallback(() => {
     setSidebarOpen(!sidebarOpen);
+    console.log(thread.messages);
   }, [sidebarOpen]);
 
   const handleNewChat = useCallback(() => {
@@ -73,78 +121,77 @@ export const ChatApp: React.FC = () => {
     }));
   }, []);
 
-  const handleSendMessage = useCallback(async (content: string) => {
-    const userMessage: Message = {
-      id: generateId(),
-      content,
-      role: 'user',
-      timestamp: new Date(),
-    };
+  const handleSendMessage = (async (content: string) => {
+    // const userMessage: MessageUI = {
+    //   id: generateId(),
+    //   content,
+    //   role: 'user',
+    //   timestamp: new Date(),
+    // };
 
+    // Submit to LangGraph server
+    thread.submit({ messages: [{ type: "human", content }] });
     // Create new conversation if none exists
-    let currentConversationId = chatState.currentConversationId;
-    if (!currentConversationId) {
-      const newConversation: Conversation = {
-        id: generateId(),
-        title: content.length > 30 ? content.substring(0, 30) + '...' : content,
-        messages: [userMessage],
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
+    // let currentConversationId = chatState.currentConversationId;
+    // if (!currentConversationId) {
+    //   const newConversation: Conversation = {
+    //     id: generateId(),
+    //     title: content.length > 30 ? content.substring(0, 30) + '...' : content,
+    //     messages: [userMessage],
+    //     createdAt: new Date(),
+    //     updatedAt: new Date(),
+    //   };
 
-      setChatState(prev => ({
-        ...prev,
-        conversations: [newConversation, ...prev.conversations],
-        currentConversationId: newConversation.id,
-        isLoading: true,
-      }));
+    //   setChatState(prev => ({
+    //     ...prev,
+    //     conversations: [newConversation, ...prev.conversations],
+    //     currentConversationId: newConversation.id,
+    //   }));
+    //   currentConversationId = generateId();
+    // } else {
+    //   // Add message to existing conversation
+    //   setChatState(prev => ({
+    //     ...prev,
+    //     conversations: prev.conversations.map(conv =>
+    //       conv.id === currentConversationId
+    //         ? {
+    //             ...conv,
+    //             // messages: [...conv.messages, userMessage],
+    //             updatedAt: new Date(),
+    //           }
+    //         : conv
+    //     ),
+    //   }));
+  });
 
-      currentConversationId = newConversation.id;
-    } else {
-      // Add message to existing conversation
-      setChatState(prev => ({
-        ...prev,
-        conversations: prev.conversations.map(conv =>
-          conv.id === currentConversationId
-            ? {
-                ...conv,
-                messages: [...conv.messages, userMessage],
-                updatedAt: new Date(),
-              }
-            : conv
-        ),
-        isLoading: true,
-      }));
-    }
+    // // Simulate AI response
+    // setTimeout(() => {
+    //   const aiMessage: MessageUI = {
+    //     id: generateId(),
+    //     content: `This is a simulated response to: "${content}". In a real implementation, this would connect to an AI service like OpenAI's API.`,
+    //     role: 'assistant',
+    //     timestamp: new Date(),
+    //   };
 
-    // Simulate AI response
-    setTimeout(() => {
-      const aiMessage: Message = {
-        id: generateId(),
-        content: `This is a simulated response to: "${content}". In a real implementation, this would connect to an AI service like OpenAI's API.`,
-        role: 'assistant',
-        timestamp: new Date(),
-      };
+    //   setChatState(prev => ({
+    //     ...prev,
+    //     conversations: prev.conversations.map(conv =>
+    //       conv.id === currentConversationId
+    //         ? {
+    //             ...conv,
+    //             messages: [...conv.messages, aiMessage],
+    //             updatedAt: new Date(),
+    //           }
+    //         : conv
+    //     ),
+    //     isLoading: false,
+    //   }));
+    // }, 1500);
+  // }, [chatState.currentConversationId]);
 
-      setChatState(prev => ({
-        ...prev,
-        conversations: prev.conversations.map(conv =>
-          conv.id === currentConversationId
-            ? {
-                ...conv,
-                messages: [...conv.messages, aiMessage],
-                updatedAt: new Date(),
-              }
-            : conv
-        ),
-        isLoading: false,
-      }));
-    }, 1500);
-  }, [chatState.currentConversationId]);
-
-  const currentConversation = chatState.conversations.find(
-    conv => conv.id === chatState.currentConversationId
-  );
+  // const currentConversation = chatState.conversations.find(
+  //   conv => conv.id === chatState.currentConversationId
+  // );
 
   return (
     <ThemeProvider theme={theme}>
@@ -168,10 +215,16 @@ export const ChatApp: React.FC = () => {
           
           <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
             <MessageList
-              messages={currentConversation?.messages || []}
-              isLoading={chatState.isLoading}
+              messages={thread.messages || []}
+              isLoading={thread.isLoading}
             />
-            
+
+            {/* <div>
+              {thread.messages.map((message) => (
+                <div key={message.id}>{message.content as string}</div>
+              ))}
+            </div> */}
+
             <Box sx={{ 
               p: 2, 
               display: 'flex', 
@@ -182,7 +235,7 @@ export const ChatApp: React.FC = () => {
             }}>
               <ChatInput
                 onSendMessage={handleSendMessage}
-                disabled={chatState.isLoading}
+                disabled={thread.isLoading}
               />
             </Box>
           </Box>
@@ -191,3 +244,5 @@ export const ChatApp: React.FC = () => {
     </ThemeProvider>
   );
 };
+
+export default ChatApp;

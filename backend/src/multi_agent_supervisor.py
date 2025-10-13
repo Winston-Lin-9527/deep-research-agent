@@ -38,10 +38,12 @@ async def llm_call(state: SupervisorState) -> Command[Literal["supervisor_tools"
     system_message = lead_researcher_prompt.format(
         date=get_today_str(),
         max_researcher_iterations=max_researcher_iterations,
-        max_concurrent_researhcers=max_concurrent_researhcers
+        max_concurrent_research_units=max_concurrent_researhcers
     )
     
     supervisor_messages = state.get("supervisor_messages", [])
+    if not supervisor_messages: 
+        print("ERROR! supervisor empty")
     
     msgs = [SystemMessage(content=system_message)] + supervisor_messages
     

@@ -1,4 +1,4 @@
-import { ChatApp } from './components/ChatApp';
+import ChatApp from './components/ChatApp';
 import './App.css';
 
 function App() {

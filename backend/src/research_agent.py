@@ -34,10 +34,23 @@ compress_model = init_chat_model("gemini-2.5-flash-lite", model_provider="google
 
 def llm_call(state: ResearcherAgentState):
     
+    # Ensure the model receives at least one HumanMessage; Gemini rejects empty contents
+    prior_messages = state.get("researcher_messages", [])
+    if not prior_messages:
+        # Seed with the research topic if available
+        research_topic = state.get("research_topic", "")
+        if research_topic:
+            prior_messages = [HumanMessage(content=research_topic)]
+        else:
+            # Fallback to a generic instruction to avoid empty contents
+            prior_messages = [HumanMessage(content="Conduct initial scoping for the research topic.")]
+
+    system_instruction = SystemMessage(content=research_agent_prompt.format(date=get_today_str()))
+
     return {
         "researcher_messages": [
             model_with_tools.invoke(
-                [SystemMessage(content=research_agent_prompt)] + state["researcher_messages"]
+                [system_instruction] + prior_messages
             )
         ]
     }
@@ -65,7 +78,8 @@ def tool_node(state: ResearcherAgentState):
 def compress_research(state: ResearcherAgentState):
     """ Takes all AI and tool outputs and compresses them into a summary suitable for the supervisor's decision making """
     system_message = compress_research_system_prompt.format(date=get_today_str())
-    messages = [SystemMessage(content=system_message)] + state.get("researcher_messages", []) + [HumanMessage(content=compress_research_human_message)]
+    human_instruction = HumanMessage(content=compress_research_human_message.format(research_topic=state.get("research_topic", "No topic specified")))
+    messages = [system_message] + state.get("researcher_messages", []) + human_instruction
 
     compressed_research = compress_model.invoke(messages)
 

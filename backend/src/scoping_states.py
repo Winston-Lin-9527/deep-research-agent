@@ -1,5 +1,7 @@
-from typing import Optional
-from langgraph.graph import MessagesState
+import operator
+from typing_extensions import Annotated, Optional, Sequence
+from langchain_core.messages import BaseMessage
+from langgraph.graph import MessagesState, add_messages
 from pydantic import BaseModel, Field
 
 # states
@@ -9,10 +11,16 @@ class AgentState(MessagesState):
     """
     # < messages > - contained in parent class
     
-    # Research brief - generated from the prompting
+    # Research brief generated from user conversation history
     research_brief: Optional[str]
-    
-    # todo more
+    # Messages exchanged with the supervisor agent for coordination
+    supervisor_messages: Annotated[Sequence[BaseMessage], add_messages]
+    # Raw unprocessed research notes collected during the research phase
+    raw_notes: Annotated[list[str], operator.add] = []
+    # Processed and structured notes ready for report generation
+    notes: Annotated[list[str], operator.add] = []
+    # Final formatted research report
+    final_report: str
     
 
 
