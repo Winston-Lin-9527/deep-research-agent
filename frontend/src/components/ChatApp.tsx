@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useStream } from "@langchain/langgraph-sdk/react";
 import type { Message } from "@langchain/langgraph-sdk";
 import {
@@ -27,6 +27,7 @@ const theme = createTheme({
 
 export const ChatApp: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [simulationMode, setSimulationMode] = useState(false);
   const [chatState, setChatState] = useState<ChatState>({
     conversations: [],
     currentConversationId: null,
@@ -42,41 +43,41 @@ export const ChatApp: React.FC = () => {
     messagesKey: "messages",
   });
 
-  // // Append only the latest AI message from the stream into the active conversation
-  // useEffect(() => {
-  //   if (!chatState.currentConversationId) return;
-  //   const count = thread.messages.length;
-  //   if (count === 0) return;
+  // Append only the latest AI message from the stream into the active conversation
+  useEffect(() => {
+    if (!chatState.currentConversationId) return;
+    const count = thread.messages.length;
+    if (count === 0) return;
 
-  //   const message = thread.messages[count - 1];
-  //   const messageId = `${message.type}_${count - 1}_${message.content}`;
-  //   if (message.type !== 'ai' || !message.content) return;
-  //   if (processedAiIdsRef.current.has(messageId)) return;
+    const message = thread.messages[count - 1];
+    // const messageId = `${message.type}_${count - 1}_${message.content}`;
+    if (message.type !== 'ai' || !message.content) return;
+    // if (processedAiIdsRef.current.has(messageId)) return;
 
-  //   const aiMessage: MessageUI = {
-  //     id: generateId(),
-  //     content: message.content as string,
-  //     role: 'assistant',
-  //     timestamp: new Date(),
-  //   };
-  //   // console.log(aiMessage);
+    // const aiMessage: MessageUI = {
+    //   id: generateId(),
+    //   content: message.content as string,
+    //   role: 'assistant',
+    //   timestamp: new Date(),
+    // };
+    console.log(message);
 
-  //   setChatState(prev => ({
-  //     ...prev,
-  //     conversations: prev.conversations.map(conv =>
-  //       conv.id === chatState.currentConversationId
-  //         ? {
-  //             ...conv,
-  //             messages: [...conv.messages, aiMessage],
-  //             updatedAt: new Date(),
-  //           }
-  //         : conv
-  //     ),
-  //     isLoading: false,
-  //   }));
+    setChatState(prev => ({
+      ...prev,
+      conversations: prev.conversations.map(conv =>
+        conv.id === chatState.currentConversationId
+          ? {
+              ...conv,
+              // messages: [...conv.messages, aiMessage],
+              updatedAt: new Date(),
+            }
+          : conv
+      ),
+      isLoading: false,
+    }));
 
-  //   processedAiIdsRef.current.add(messageId);
-  // }, [thread.messages, chatState.currentConversationId]);
+    // processedAiIdsRef.current.add(messageId);
+  }, [thread.messages, chatState.currentConversationId]);
   
 
 
@@ -122,14 +123,27 @@ export const ChatApp: React.FC = () => {
   }, []);
 
   const handleSendMessage = (async (content: string) => {
-    // const userMessage: MessageUI = {
-    //   id: generateId(),
-    //   content,
-    //   role: 'user',
-    //   timestamp: new Date(),
-    // };
+    if (simulationMode) {
+      // In simulation mode, add a delay and return a template response
+      setChatState(prev => ({
+        ...prev,
+        isLoading: true,
+      }));
 
-    // Submit to LangGraph server
+      // Simulate delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      const simulatedResponse: Message = {
+        type: "ai",
+        content: `This is a simulated response to: "${content}"\n\nI am in simulation mode, so I will provide a template response. In a real scenario, I would process your message and provide a meaningful response based on the context and your query.`
+      };
+
+      thread.messages.push({ type: "human", content });
+      thread.messages.push(simulatedResponse);
+      return;
+    }
+
+    // Normal mode - submit to LangGraph server
     thread.submit({ messages: [{ type: "human", content }] });
     // Create new conversation if none exists
     // let currentConversationId = chatState.currentConversationId;
@@ -200,6 +214,9 @@ export const ChatApp: React.FC = () => {
         <ChatHeader
           onMenuClick={handleMenuClick}
           onNewChat={handleNewChat}
+          simulationMode={simulationMode}
+          onSimulationModeChange={setSimulationMode}
+          currentConversationId={chatState.currentConversationId}
         />
         
         <Box sx={{ display: 'flex', flexGrow: 1, overflow: 'hidden' }}>

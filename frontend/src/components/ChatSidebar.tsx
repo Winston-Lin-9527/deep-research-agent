@@ -8,6 +8,7 @@ import {
   Typography,
   Box,
   Divider,
+  Button,
   IconButton,
 } from '@mui/material';
 import {
@@ -51,9 +52,14 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
       }}
     >
       <Box sx={{ p: 2 }}>
-        <Typography variant="h6" gutterBottom>
-          Conversations
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+          <Typography variant="h6" gutterBottom sx={{ m: 0 }}>
+            Conversations
+          </Typography>
+          <Button variant="contained" size="small" onClick={onNewChat}>
+            New Chat
+          </Button>
+        </Box>
         <Divider sx={{ mb: 2 }} />
         
         <List>
