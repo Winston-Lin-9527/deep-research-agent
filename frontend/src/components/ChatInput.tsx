@@ -54,7 +54,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
           <TextField
             fullWidth
             multiline
-            maxRows={2}
+            maxRows={4}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyPress={handleKeyPress}

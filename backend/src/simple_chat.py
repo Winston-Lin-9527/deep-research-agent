@@ -34,7 +34,12 @@ def call_model(state: MessagesState):
     """Call the LLM with the running message history and append the AI reply."""
     # You can optionally insert a system message or prompt template here.
     ai = llm.invoke(state["messages"])  # pass the accumulated messages directly
-    return {"messages": [ai]}
+    return {
+        "messages": [AIMessage(
+            content=ai.content,
+            additional_kwargs={"metadata": {"type": "simple_reply"}}
+        )],  # append the AI response to the message history
+    }
 
 
 workflow = StateGraph(state_schema=MessagesState)

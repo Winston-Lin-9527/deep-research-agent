@@ -35,7 +35,10 @@ async def final_report_generation(state: AgentState):
     
     return {
         "final_report": final_report.content,
-        "messages": [AIMessage(content="here's the final report: " + final_report.content)]
+        "messages": [AIMessage(
+            content="here's the final report: " + final_report.content,
+            additional_kwargs={"metadata": {"type": "final_report"}}
+        )]
     }
 
     

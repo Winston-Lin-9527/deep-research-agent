@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
+import { Switch, FormControlLabel } from '@mui/material';
 import { useStream } from "@langchain/langgraph-sdk/react";
 import type { Message } from "@langchain/langgraph-sdk";
 import {
@@ -28,6 +29,7 @@ const theme = createTheme({
 export const ChatApp: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [simulationMode, setSimulationMode] = useState(false);
+  const [deepResearchEnabled, setDeepResearchEnabled] = useState(false);
   const [chatState, setChatState] = useState<ChatState>({
     conversations: [],
     currentConversationId: null,
@@ -39,7 +41,7 @@ export const ChatApp: React.FC = () => {
     messages: Message[];
   }>({
     apiUrl: "http://localhost:2024",
-    assistantId: "deep_research_agent",
+    assistantId: deepResearchEnabled ? "deep_research_agent" : "simple_chat",
     messagesKey: "messages",
   });
 
@@ -246,14 +248,38 @@ export const ChatApp: React.FC = () => {
               p: 2, 
               display: 'flex', 
               justifyContent: 'center',
+              alignItems: 'center',
               borderTop: '1px solid',
               borderColor: 'divider',
               backgroundColor: 'background.default',
             }}>
-              <ChatInput
-                onSendMessage={handleSendMessage}
-                disabled={thread.isLoading}
-              />
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 3,
+                  maxWidth: 600,
+                  width: '100%',
+                  mx: 'auto',
+                }}
+              >
+                <ChatInput
+                  onSendMessage={handleSendMessage}
+                  disabled={thread.isLoading}
+                />
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={deepResearchEnabled}
+                      onChange={(_, checked) => setDeepResearchEnabled(checked)}
+                      color="primary"
+                      size="small"
+                    />
+                  }
+                  label="Deep Research"
+                  sx={{ '.MuiFormControlLabel-label': { fontSize: '0.85rem' } }}
+                />
+              </Box>
             </Box>
           </Box>
         </Box>

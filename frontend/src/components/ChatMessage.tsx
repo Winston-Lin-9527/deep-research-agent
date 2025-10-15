@@ -10,6 +10,12 @@ import {
   Person as PersonIcon,
   SmartToy as BotIcon,
 } from '@mui/icons-material';
+import Markdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import rehypeKatex from 'rehype-katex'
+import remarkMath from 'remark-math'
+import 'katex/dist/katex.min.css' // `rehype-katex` does not import the CSS for you
+
 import type { Message } from '../types/chat';
 
 interface ChatMessageProps {
@@ -59,9 +65,10 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
           flexGrow: isUser ? 0 : 1,
         }}
       >
-        <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+        {/* <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
           {message.content}
-        </Typography>
+        </Typography> */}
+        <Markdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]}>{message.content}</Markdown>
         
         <Typography
           variant="caption"
