@@ -39,7 +39,7 @@ export const ChatApp: React.FC = () => {
     messages: Message[];
   }>({
     apiUrl: "http://localhost:2024",
-    assistantId: "simple_chat",
+    assistantId: "deep_research_agent",
     messagesKey: "messages",
   });
 
@@ -133,14 +133,14 @@ export const ChatApp: React.FC = () => {
       // Simulate delay
       await new Promise(resolve => setTimeout(resolve, 1500));
 
-      const simulatedResponse: Message = {
-        type: "ai",
-        content: `This is a simulated response to: "${content}"\n\nI am in simulation mode, so I will provide a template response. In a real scenario, I would process your message and provide a meaningful response based on the context and your query.`
-      };
+      // const simulatedResponse: Message = {
+      //   type: "ai",
+      //   content: `This is a simulated response to: "${content}"\n\nI am in simulation mode, so I will provide a template response. In a real scenario, I would process your message and provide a meaningful response based on the context and your query.`
+      // };
 
-      thread.messages.push({ type: "human", content });
-      thread.messages.push(simulatedResponse);
-      return;
+      // thread.messages.push({ type: "human", content });
+      // thread.messages.push(simulatedResponse);
+      // return;
     }
 
     // Normal mode - submit to LangGraph server

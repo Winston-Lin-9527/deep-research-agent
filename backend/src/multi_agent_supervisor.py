@@ -47,7 +47,7 @@ async def llm_call(state: SupervisorState) -> Command[Literal["supervisor_tools"
     
     msgs = [SystemMessage(content=system_message)] + supervisor_messages
     
-    response = await supervisor_model.ainvoke(msgs)
+    response = await supervisor_model_with_tools.ainvoke(msgs)
     
     return Command(
         goto="supervisor_tools",
