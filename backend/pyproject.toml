@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "asyncio>=4.0.0",
-    "bcrypt>=4.0.0",
+    "bcrypt>=5.0.0",
     "chromadb>=1.1.1",
     "dotenv>=0.9.9",
     "fastapi>=0.118.1",
@@ -20,6 +20,7 @@ dependencies = [
     "langgraph-cli>=0.3.8",
     "passlib>=1.7.4",
     "psycopg2-binary>=2.9.7",
+    "pypdf>=6.1.1",
     "python-jose[cryptography]>=3.3.0",
     "python-multipart>=0.0.9",
     "rich>=14.1.0",

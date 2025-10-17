@@ -24,7 +24,7 @@ class DBUser(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     
     # Relationship to documents
-    documents = relationship("Document", back_populates="owner")
+    documents = relationship("DBDocument", back_populates="owner")
 
 class DBDocument(Base):
     __tablename__ = "documents"
@@ -40,7 +40,7 @@ class DBDocument(Base):
     status = Column(String, default="processing")  # processing, processed, failed
     
     # Relationship to user
-    owner = relationship("User", back_populates="documents")
+    owner = relationship("DBUser", back_populates="documents")
 
 # Create tables
 def create_tables():

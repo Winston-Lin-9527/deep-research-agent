@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+import datetime 
 from typing import Optional
 from fastapi import HTTPException, Depends, status
 from fastapi.security import HTTPBearer
@@ -6,11 +6,12 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 import os
+import bcrypt
 
 from src.database import get_db, DBUser
 
 # Security context for password hashing
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Security scheme for API
 security = HTTPBearer()
@@ -24,20 +25,26 @@ class AuthHandler:
     def __init__(self):
         self.secret_key = SECRET_KEY
         self.algorithm = ALGORITHM
-        self.access_token_duration = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        self.access_token_duration = datetime.timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
 
     def verify_password(self, plain_password: str, hashed_password: str) -> bool:
         """Verify a plain password against a hashed password"""
-        return pwd_context.verify(plain_password, hashed_password)
-
+        return bcrypt.checkpw(
+            bytes(plain_password, 'utf-8'),
+            bytes(hashed_password, 'utf-8')
+        )
+        
     def get_password_hash(self, password: str) -> str:
         """Hash a password"""
-        return pwd_context.hash(password)
+        return bcrypt.hashpw(
+            bytes(password, 'utf-8'),
+            bcrypt.gensalt()
+        ).decode('utf-8') # return as str
 
     def create_access_token(self, data: dict) -> str:
         """Create JWT access token"""
         to_encode = data.copy()
-        expire = datetime.now(datetime.timezone.utc) + self.access_token_duration
+        expire = datetime.datetime.now(datetime.timezone.utc) + self.access_token_duration
         to_encode.update({"exp": expire})
         return jwt.encode(to_encode, self.secret_key, algorithm=self.algorithm)
 
