@@ -10,5 +10,7 @@ wheels/
 .venv
 
 .langgraph_api
+# vector store file
+.chroma_db
 
 .env

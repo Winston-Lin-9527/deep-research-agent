@@ -7,6 +7,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from starlette.routing import Route
 
+from src.database import create_tables
+
 app = FastAPI()
 
 # Turn off CORS (allow all origins)
@@ -17,6 +19,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Import and include API routes after middleware
+from src.api_routes import router as api_router
+app.include_router(api_router, prefix="/api/v1")
 
 def create_frontend_router(build_dir="frontend/dist"):
     build_path = pathlib.Path(__file__).parent.parent.parent / build_dir
@@ -39,3 +45,14 @@ app.mount("/app",
           create_frontend_router(),
           name="frontend"
 )
+
+# Create database tables on startup, developer only
+@app.put("/startup")
+def on_startup():
+    create_tables()
+    return {"message": "Tables created"}
+
+@app.get("/ping")
+async def ping():
+    """Simple health check endpoint."""
+    return {"message": "pong"}
