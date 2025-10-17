@@ -6,11 +6,13 @@ import {
   IconButton,
   Switch,
   FormControlLabel,
+  Button,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
   Add as AddIcon,
 } from '@mui/icons-material';
+import { useAuth } from '../context/AuthContext';
 // import { useStream } from "@langchain/langgraph-sdk/react"
 // import type { Message } from "@langchain/langgraph-sdk"
 
@@ -31,6 +33,13 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   onSimulationModeChange,
   currentConversationId
 }) => {
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    logout();
+  };
+
   return (
     <>
       <AppBar position="static" elevation={1}>
@@ -73,6 +82,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
           >
             <AddIcon />
           </IconButton>
+          <Button color="inherit" onClick={handleLogout}>Logout</Button>
         </Toolbar>
       </AppBar>
     </>

@@ -9,8 +9,9 @@ wheels/
 # Virtual environments
 .venv
 
-.langgraph_api
+.langgraph_api/
 # vector store file
-.chroma_db
+.chroma_db/
+temp_uploads/
 
 .env

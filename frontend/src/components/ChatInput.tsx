@@ -14,6 +14,7 @@ import {
   AddCircle as AddCircleIcon,
   InsertDriveFile as InsertDriveFileIcon,
 } from '@mui/icons-material';
+import { useAuth } from '../context/AuthContext';
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
@@ -34,6 +35,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const { token } = useAuth();
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -72,6 +74,10 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     try {
       const xhr = new XMLHttpRequest();
       xhr.open('POST', 'http://localhost:2024/api/v1/upload/pdf', true);
+      
+      if (token) {
+        xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+      }
 
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable) {
