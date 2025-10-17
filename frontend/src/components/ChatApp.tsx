@@ -41,6 +41,7 @@ export const ChatApp: React.FC = () => {
     messages: Message[];
   }>({
     apiUrl: "http://localhost:2024",
+    // apiUrl: "http://152.67.123.100:2024",
     assistantId: deepResearchEnabled ? "deep_research_agent" : "simple_chat",
     messagesKey: "messages",
   });
@@ -266,6 +267,7 @@ export const ChatApp: React.FC = () => {
                 <ChatInput
                   onSendMessage={handleSendMessage}
                   disabled={thread.isLoading}
+                  isLoading={thread.isLoading}
                 />
                 <FormControlLabel
                   control={
