@@ -4,9 +4,6 @@ import { useStream } from "@langchain/langgraph-sdk/react";
 import type { Message } from "@langchain/langgraph-sdk";
 import {
   Box,
-  ThemeProvider,
-  createTheme,
-  CssBaseline,
 } from '@mui/material';
 import { ChatHeader } from './ChatHeader';
 import { ChatSidebar } from './ChatSidebar';
@@ -14,19 +11,7 @@ import { MessageList } from './MessageList';
 import { ChatInput } from './ChatInput';
 import type { Conversation, ChatState } from '../types/chat';
 
-const theme = createTheme({
-  palette: {
-    mode: 'light',
-    primary: {
-      main: '#1976d2',
-    },
-    secondary: {
-      main: '#dc004e',
-    },
-  },
-});
-
-export const ChatApp: React.FC = () => {
+export const ChatApp = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [simulationMode, setSimulationMode] = useState(false);
   const [deepResearchEnabled, setDeepResearchEnabled] = useState(false);
@@ -211,83 +196,78 @@ export const ChatApp: React.FC = () => {
   // );
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-        <ChatHeader
-          onMenuClick={handleMenuClick}
-          onNewChat={handleNewChat}
-          simulationMode={simulationMode}
-          onSimulationModeChange={setSimulationMode}
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+      <ChatHeader
+        onMenuClick={handleMenuClick}
+        onNewChat={handleNewChat}
+        simulationMode={simulationMode}
+        onSimulationModeChange={setSimulationMode}
+        currentConversationId={chatState.currentConversationId}
+      />
+      
+      <Box sx={{ display: 'flex', flexGrow: 1, overflow: 'hidden' }}>
+        <ChatSidebar
+          open={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+          conversations={chatState.conversations}
           currentConversationId={chatState.currentConversationId}
+          onConversationSelect={handleConversationSelect}
+          onDeleteConversation={handleDeleteConversation}
+          onNewChat={handleNewChat}
         />
         
-        <Box sx={{ display: 'flex', flexGrow: 1, overflow: 'hidden' }}>
-          <ChatSidebar
-            open={sidebarOpen}
-            onClose={() => setSidebarOpen(false)}
-            conversations={chatState.conversations}
-            currentConversationId={chatState.currentConversationId}
-            onConversationSelect={handleConversationSelect}
-            onDeleteConversation={handleDeleteConversation}
-            onNewChat={handleNewChat}
+        <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+          <MessageList
+            messages={thread.messages || []}
+            isLoading={thread.isLoading}
           />
-          
-          <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-            <MessageList
-              messages={thread.messages || []}
-              isLoading={thread.isLoading}
-            />
 
-            {/* <div>
-              {thread.messages.map((message) => (
-                <div key={message.id}>{message.content as string}</div>
-              ))}
-            </div> */}
+          {/* <div>
+            {thread.messages.map((message) => (
+              <div key={message.id}>{message.content as string}</div>
+            ))}
+          </div> */}
 
-            <Box sx={{ 
-              p: 2, 
-              display: 'flex', 
-              justifyContent: 'center',
-              alignItems: 'center',
-              borderTop: '1px solid',
-              borderColor: 'divider',
-              backgroundColor: 'background.default',
-            }}>
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 3,
-                  maxWidth: 600,
-                  width: '100%',
-                  mx: 'auto',
-                }}
-              >
-                <ChatInput
-                  onSendMessage={handleSendMessage}
-                  disabled={thread.isLoading}
-                  isLoading={thread.isLoading}
-                />
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={deepResearchEnabled}
-                      onChange={(_, checked) => setDeepResearchEnabled(checked)}
-                      color="primary"
-                      size="small"
-                    />
-                  }
-                  label="Deep Research"
-                  sx={{ '.MuiFormControlLabel-label': { fontSize: '0.85rem' } }}
-                />
-              </Box>
+          <Box sx={{ 
+            p: 2, 
+            display: 'flex', 
+            justifyContent: 'center',
+            alignItems: 'center',
+            borderTop: '1px solid',
+            borderColor: 'divider',
+            backgroundColor: 'background.default',
+          }}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 3,
+                maxWidth: 600,
+                width: '100%',
+                mx: 'auto',
+              }}
+            >
+              <ChatInput
+                onSendMessage={handleSendMessage}
+                disabled={thread.isLoading}
+                isLoading={thread.isLoading}
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={deepResearchEnabled}
+                    onChange={(_, checked) => setDeepResearchEnabled(checked)}
+                    color="primary"
+                    size="small"
+                  />
+                }
+                label="Deep Research"
+                sx={{ '.MuiFormControlLabel-label': { fontSize: '0.85rem' } }}
+              />
             </Box>
           </Box>
         </Box>
       </Box>
-    </ThemeProvider>
+    </Box>
   );
 };
-
-export default ChatApp;
